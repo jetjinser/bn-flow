@@ -1,4 +1,4 @@
-DROP TABLE bn_trigger IF EXISTS;
+DROP TABLE IF EXISTS bn_trigger ;
 
 CREATE TABLE IF NOT EXISTS bn_trigger (
   id serial PRIMARY KEY,
