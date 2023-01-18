@@ -21,9 +21,6 @@ struct FlowTrigger {
     flow_user: String,
 }
 
-#[derive(Serialize)]
-struct BnEvent;
-
 async fn listen(
     Path((flow_user, flow_id)): Path<(String, String)>,
     Query(FlowQuery { address }): Query<FlowQuery>,
@@ -94,6 +91,7 @@ async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_service::S
         .route("/api/:flows_user/:flow_id/listen", get(listen))
         .route("/api/:flows_user/:flow_id/revoke", get(revoke))
         .route("/api/event/:address", get(event))
+        .route("/echo", get(|s: String| async { s }))
         .with_state(pool);
     let sync_wrapper = SyncWrapper::new(router);
 
