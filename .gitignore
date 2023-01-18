@@ -1,2 +1,6 @@
 /target
+/*/target
 /Cargo.lock
+
+.envrc
+.direnv/
