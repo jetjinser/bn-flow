@@ -26,10 +26,10 @@ async fn listen(
     Query(FlowQuery { address }): Query<FlowQuery>,
     State(pool): State<PgPool>,
 ) -> impl IntoResponse {
-    let sql = "INSERT INTO bn_trigger (flow_user, flow_id, address) VALUES (?, ?, ?)";
+    let sql = "INSERT INTO bn_trigger (flow_user, flow_id, address) VALUES ($1, $2, $3)";
     let result = sqlx::query(sql)
-        .bind(flow_id)
         .bind(flow_user)
+        .bind(flow_id)
         .bind(address)
         .execute(&pool)
         .await;
@@ -51,10 +51,10 @@ async fn revoke(
     Path((flow_user, flow_id)): Path<(String, String)>,
     State(pool): State<PgPool>,
 ) -> StatusCode {
-    let sql = "DELETE FROM bn_trigger WHERE flow_user = ? AND flow_id = ?";
+    let sql = "DELETE FROM bn_trigger WHERE flow_user = $1 AND flow_id = $2";
     let result = sqlx::query(sql)
-        .bind(flow_id)
         .bind(flow_user)
+        .bind(flow_id)
         .execute(&pool)
         .await;
 
@@ -65,7 +65,7 @@ async fn revoke(
 }
 
 async fn event(Path(address): Path<String>, State(pool): State<PgPool>) -> impl IntoResponse {
-    let sql = "SELECT flow_id, flow_user FROM bn_trigger WHERE address = ?";
+    let sql = "SELECT flow_id, flow_user FROM bn_trigger WHERE address = $1";
     let all_flows = sqlx::query_as::<_, FlowTrigger>(sql)
         .bind(address)
         .fetch_all(&pool)
