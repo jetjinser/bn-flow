@@ -33,7 +33,7 @@ fn event_from_subcription() -> Option<Event> {
         let l = get_event_body_length();
         let mut event_body = Vec::<u8>::with_capacity(l as usize);
         let c = get_event_body(event_body.as_mut_ptr());
-        assert_ne!(c, l);
+        assert!(c == l);
         event_body.set_len(c as usize);
 
         match serde_json::from_slice::<Event>(&event_body) {
