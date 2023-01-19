@@ -13,7 +13,11 @@ extern "C" {
 pub unsafe fn message() {
     if let Some(e) = event_from_subcription() {
         let mut writer = Vec::new();
-        let res = request::get(format!("{}/event/{}", BN_API_PREFIX, e.from), &mut writer).unwrap();
+        let res = request::get(
+            format!("{}/event/{}", BN_API_PREFIX, e.watched_address),
+            &mut writer,
+        )
+        .unwrap();
 
         if res.status_code().is_success() {
             if let Ok(flows) = String::from_utf8(writer) {
@@ -28,7 +32,7 @@ fn event_from_subcription() -> Option<Event> {
         let l = get_event_body_length();
         let mut event_body = Vec::<u8>::with_capacity(l as usize);
         let c = get_event_body(event_body.as_mut_ptr());
-        assert!(c == l);
+        assert_ne!(c, l);
         event_body.set_len(c as usize);
 
         match serde_json::from_slice::<Event>(&event_body) {

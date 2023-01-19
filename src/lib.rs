@@ -18,17 +18,17 @@ struct FlowQuery {
 #[derive(Debug, Clone, Deserialize, Serialize, FromRow)]
 struct FlowTrigger {
     flow_id: String,
-    flow_user: String,
+    flows_user: String,
 }
 
 async fn listen(
-    Path((flow_user, flow_id)): Path<(String, String)>,
+    Path((flows_user, flow_id)): Path<(String, String)>,
     Query(FlowQuery { address }): Query<FlowQuery>,
     State(pool): State<PgPool>,
 ) -> impl IntoResponse {
-    let sql = "INSERT INTO bn_trigger (flow_user, flow_id, address) VALUES ($1, $2, $3)";
+    let sql = "INSERT INTO bn_trigger (flows_user, flow_id, address) VALUES ($1, $2, $3)";
     let result = sqlx::query(sql)
-        .bind(flow_user)
+        .bind(flows_user)
         .bind(flow_id)
         .bind(address)
         .execute(&pool)
@@ -48,12 +48,12 @@ async fn listen(
 }
 
 async fn revoke(
-    Path((flow_user, flow_id)): Path<(String, String)>,
+    Path((flows_user, flow_id)): Path<(String, String)>,
     State(pool): State<PgPool>,
 ) -> StatusCode {
-    let sql = "DELETE FROM bn_trigger WHERE flow_user = $1 AND flow_id = $2";
+    let sql = "DELETE FROM bn_trigger WHERE flows_user = $1 AND flow_id = $2";
     let result = sqlx::query(sql)
-        .bind(flow_user)
+        .bind(flows_user)
         .bind(flow_id)
         .execute(&pool)
         .await;
@@ -65,7 +65,7 @@ async fn revoke(
 }
 
 async fn event(Path(address): Path<String>, State(pool): State<PgPool>) -> impl IntoResponse {
-    let sql = "SELECT flow_id, flow_user FROM bn_trigger WHERE address = $1";
+    let sql = "SELECT flow_id, flows_user FROM bn_trigger WHERE address = $1";
     let all_flows = sqlx::query_as::<_, FlowTrigger>(sql)
         .bind(address)
         .fetch_all(&pool)
@@ -91,7 +91,6 @@ async fn axum(#[shuttle_shared_db::Postgres] pool: PgPool) -> shuttle_service::S
         .route("/api/:flows_user/:flow_id/listen", get(listen))
         .route("/api/:flows_user/:flow_id/revoke", get(revoke))
         .route("/api/event/:address", get(event))
-        .route("/echo", get(|s: String| async { s }))
         .with_state(pool);
     let sync_wrapper = SyncWrapper::new(router);
 
