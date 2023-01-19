@@ -1,7 +1,8 @@
 use blocknative_flows::Event;
 use http_req::request;
 
-const BN_API_PREFIX: &str = "https://blocknative-flows.shuttleapp.rs/api";
+// const BN_API_PREFIX: &str = "https://blocknative-flows.shuttleapp.rs/api";
+const BN_API_PREFIX: &str = "http://entry.purejs.icu:8090/api";
 
 extern "C" {
     fn get_event_body_length() -> i32;
