@@ -2,7 +2,7 @@ use http_req::request;
 use serde::{Deserialize, Serialize};
 
 // const BN_API_PREFIX: &str = "https://blocknative-flows.shuttleapp.rs/api";
-const BN_API_PREFIX: &str = "http://entry.purejs.icu:8090/api";
+const BN_API_PREFIX: &str = "https://bn-flows-js.vercel.app/api";
 
 extern "C" {
     // Flag if current running is for listening(1) or message receving(0)
