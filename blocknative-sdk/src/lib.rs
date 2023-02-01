@@ -95,7 +95,13 @@ pub fn revoke_listeners() {
     }
 }
 
-pub fn event_received(address: &str) -> Option<Event> {
+pub fn listen_to_address(address: &str, callback: fn(Event)) {
+    if let Some(bnm) = event_received(address) {
+        callback(bnm)
+    }
+}
+
+fn event_received(address: &str) -> Option<Event> {
     unsafe {
         match is_listening() {
             // Calling register
